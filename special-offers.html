@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>العروض الخاصة - Stop & Shop</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333; margin: 0; padding: 20px; text-align: center; }
+        header { background-color: #0073e6; color: white; padding: 10px 0; position: relative; }
+        h1 { margin: 0; }
+        .container { max-width: 800px; margin: 20px auto; padding: 20px; background: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .offer-image { max-width: 100%; margin-bottom: 10px; }
+        .offer-description { text-align: left; }
+        .offer-button, .cart-button { display: inline-block; padding: 10px 20px; margin-top: 20px; background-color: #0073e6; color: white; text-decoration: none; border-radius: 4px; cursor: pointer; }
+        .offer-button:hover, .cart-button:hover { background-color: #005bb5; }
+        .link { display: block; margin-top: 20px; text-decoration: none; color: #0073e6; }
+        .link:hover { color: #005bb5; }
+        .cart-icon { position: absolute; top: 50%; right: 20px; transform: translateY(-50%); background-color: white; color: #0073e6; padding: 10px; border-radius: 50%; cursor: pointer; text-decoration: none; }
+        .cart-icon:hover { background-color: #005bb5; color: white; }
+        .cart-count { position: absolute; top: 5px; right: 5px; background-color: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 12px; }
+    </style>
+</head>
+<body>
+<header>
+    <h1>العروض الخاصة في Stop & Shop</h1>
+    <p>استمتع بعروضنا الخاصة والمميزات الرائعة!</p>
+    <a href="cart.html" class="cart-icon" width="40">
+        🛒
+        <span class="cart-count" id="cart-count">0</span>
+    </a>
+</header>
+<div class="container">
+    <h2>أحدث العروض</h2>
+    <div class="offer-description">
+        <img src="path/to/offer1.jpg" class="offer-image" alt="عرض خاص 1">
+        <p>تمتع بخصم 20% على جميع المنتجات في عطلة نهاية الأسبوع. لا تفوت الفرصة!</p>
+        <button class="cart-button" onclick="addToCart('عرض خاص 1', 100, 0.2)">إضافة إلى السلة</button>
+    </div>
+    <div class="offer-description">
+        <img src="path/to/offer2.jpg" class="offer-image" alt="عرض خاص 2">
+        <p>هدايا مجانية مع كل عملية شراء تزيد عن 200 دولار. اكتشف ماذا لدينا لك!</p>
+        <button class="cart-button" onclick="addToCart('عرض خاص 2', 250, 0)">إضافة إلى السلة</button>
+    </div>
+    <a href="stp1.html" class="offer-button">تسجيل دخول الزبائن للاستفادة من العروض</a>
+    <a href="stp0.html" class="link">العودة إلى الصفحة الرئيسية</a>
+</div>
+<footer>
+    <p>📍 Harouf, Al baydar, Main Street</p>
+</footer>
+
+<script>
+    // استرجاع عدد المنتجات في السلة وتحديث العرض
+    document.addEventListener('DOMContentLoaded', function() {
+        updateCartCount();
+    });
+
+    function addToCart(name, price, discount) {
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        
+        const discountedPrice = price - (price * discount);
+
+        const item = {
+            name: name,
+            price: discountedPrice.toFixed(2)
+        };
+
+        cart.push(item);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        
+        alert('تم إضافة العنصر إلى السلة بسعر مخصوم: ' + item.price);
+        updateCartCount();
+    }
+
+    function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        document.getElementById('cart-count').textContent = cart.length;
+    }
+</script>
+
+</body>
+</html>

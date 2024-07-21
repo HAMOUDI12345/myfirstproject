@@ -1,0 +1,134 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم الزبائن - Stop & Shop</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333; margin: 0; padding: 20px; text-align: center; }
+        header { background-color: #0073e6; color: white; padding: 10px 0; position: relative; }
+        h1 { margin: 0; }
+        .container { max-width: 800px; margin: 20px auto; padding: 20px; background: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .product-list { text-align: left; margin-top: 20px; }
+        .product-list table { width: 100%; border-collapse: collapse; }
+        .product-list th, .product-list td { padding: 10px; border: 1px solid #ccc; }
+        .search-form { margin-bottom: 20px; }
+        .cart-icon { position: absolute; top: 10px; right: 20px; cursor: pointer; }
+        footer { margin-top: 20px; color: #777; }
+        .cart-item-count { background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 14px; position: absolute; top: -10px; right: -10px; }
+        .add-to-cart-btn { background-color: #0073e6; color: white; padding: 5px 10px; border: none; cursor: pointer; border-radius: 4px; }
+        .add-to-cart-btn:hover { background-color: #005bb5; }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Stop & Shop - لوحة تحكم الزبائن</h1>
+    <p>حاروف-حي البيدر -الشارع العام</p>
+    <p>⏰ ساعات العمل: 8:00 صباحًا - 10:00 مساءً</p>
+    <div class="cart-icon" onclick="goToCart()">
+        <img src="shopping-cart.png" alt="Cart" width="40">
+        <span class="cart-item-count" id="cart-item-count">0</span>
+    </div>
+</header>
+<div class="container">
+    <h2>المنتجات المتاحة</h2>
+    <div class="search-form">
+        <input type="text" id="search-input" placeholder="ابحث عن المنتج بالاسم...">
+    </div>
+    <div class="product-list">
+        <table>
+            <thead>
+                <tr>
+                    <th>اسم المنتج</th>
+                    <th>السعر</th>
+                    <th>الباركود</th>
+                    <th>إضافة إلى السلة</th>
+                </tr>
+            </thead>
+            <tbody id="product-table-body">
+                <!-- سيتم إضافة المنتجات هنا تلقائيًا من السكريبت -->
+            </tbody>
+        </table>
+    </div>
+    <a href="(stp1).html">العودة إلى تسجيل الدخول للزبائن</a>
+</div>
+<footer>
+    <p>📍 Harouf, Al baydar, Main Street</p>
+</footer>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        displayProducts();
+        updateCartItemCount();
+    });
+
+    function displayProducts() {
+        let products = localStorage.getItem('products');
+        products = products ? JSON.parse(products) : [];
+        
+        const tableBody = document.getElementById('product-table-body');
+        tableBody.innerHTML = ''; // إعادة تعيين جدول المنتجات
+        
+        products.forEach(product => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${product.name}</td>
+                <td>${product.price}</td>
+                <td>${product.barcode}</td>
+                <td><button class="add-to-cart-btn" onclick="addToCart('${product.name}', '${product.price}', '${product.barcode}')">إضافة إلى السلة</button></td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    document.getElementById('search-input').addEventListener('input', function() {
+        searchProduct(this.value.trim().toLowerCase());
+    });
+
+    function searchProduct(searchText) {
+        let products = localStorage.getItem('products');
+        products = products ? JSON.parse(products) : [];
+        
+        const filteredProducts = products.filter(product => {
+            return product.name.toLowerCase().includes(searchText);
+        });
+
+        const tableBody = document.getElementById('product-table-body');
+        tableBody.innerHTML = ''; // إعادة تعيين جدول المنتجات
+        
+        filteredProducts.forEach(product => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${product.name}</td>
+                <td>${product.price}</td>
+                <td>${product.barcode}</td>
+                <td><button class="add-to-cart-btn" onclick="addToCart('${product.name}', '${product.price}', '${product.barcode}')">إضافة إلى السلة</button></td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    function addToCart(name, price, barcode) {
+        let cart = localStorage.getItem('cart');
+        cart = cart ? JSON.parse(cart) : [];
+
+        cart.push({ name, price, barcode });
+
+        localStorage.setItem('cart', JSON.stringify(cart));
+
+        updateCartItemCount();
+    }
+
+    function updateCartItemCount() {
+        let cart = localStorage.getItem('cart');
+        cart = cart ? JSON.parse(cart) : [];
+        document.getElementById('cart-item-count').textContent = cart.length;
+    }
+
+    function goToCart() {
+        window.location.href = 'cart.html';
+    }
+</script>
+</body>
+</html>
+

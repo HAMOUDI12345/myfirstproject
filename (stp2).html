@@ -1,0 +1,52 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل زبون جديد - Stop & Shop</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333; margin: 0; padding: 20px; text-align: center; }
+        header { background-color: #0073e6; color: white; padding: 10px 0; }
+        h1 { margin: 0; }
+        .container { max-width: 800px; margin: 20px auto; padding: 20px; background: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .register-form input, .register-form button { padding: 10px; margin-bottom: 10px; width: calc(100% - 20px); box-sizing: border-box; }
+        footer { margin-top: 20px; color: #777; }
+        input[type="text"], input[type="password"] { width: calc(100% - 20px); padding: 8px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 10px 20px; border: none; background-color: #0073e6; color: white; cursor: pointer; border-radius: 4px; }
+        button:hover { background-color: #005bb5; }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Stop & Shop</h1>
+    <p>حاروف-حي البيدر -الشارع العام</p>
+    <p>⏰ ساعات العمل: 8:00 صباحًا - 10:00 مساءً</p>
+</header>
+<div class="container">
+    <h2>تسجيل زبون جديد</h2>
+    <div class="register-form">
+        <input type="text" id="new-customer-username" placeholder="اسم المستخدم" required>
+        <input type="password" id="new-customer-password" placeholder="كلمة المرور" required>
+        <button onclick="registerCustomer()">تسجيل</button>
+    </div>
+    <a href="(stp1).html">العودة إلى تسجيل دخول الزبائن</a><br>
+    <a href="(stp0).html">العودة إلى الصفحة الرئيسية</a>
+</div>
+<footer>
+    <p>📍 Harouf, Al baydar, Main Street</p>
+</footer>
+<script>
+    function registerCustomer() {
+        const username = document.getElementById('new-customer-username').value;
+        const password = document.getElementById('new-customer-password').value;
+        let customers = localStorage.getItem('customers');
+        customers = customers ? JSON.parse(customers) : [];
+        customers.push({ username, password });
+        localStorage.setItem('customers', JSON.stringify(customers));
+        alert('تم التسجيل بنجاح!');
+        window.location.href = 'customer-login.html';
+    }
+</script>
+</body>
+</html>

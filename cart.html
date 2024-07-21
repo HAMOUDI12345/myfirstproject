@@ -1,0 +1,150 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عربة التسوق - Stop & Shop</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333; margin: 0; padding: 20px; text-align: center; }
+        header { background-color: #0073e6; color: white; padding: 10px 0; }
+        h1 { margin: 0; }
+        .container { max-width: 800px; margin: 20px auto; padding: 20px; background: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .cart-list { text-align: left; margin-top: 20px; }
+        .cart-list table { width: 100%; border-collapse: collapse; }
+        .cart-list th, .cart-list td { padding: 10px; border: 1px solid #ccc; }
+        .total { font-size: 1.2em; margin-top: 20px; }
+        footer { margin-top: 20px; color: #777; }
+        .remove-btn { background-color: #e60000; color: white; padding: 5px 10px; border: none; cursor: pointer; border-radius: 4px; }
+        .remove-btn:hover { background-color: #b30000; }
+        
+        /* كلاس الزر المؤكد */
+        .confirm-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 20px 0;
+            text-decoration: none;
+            color: white;
+            background-color: #28a745;
+            border-radius: 4px;
+            font-size: 1em;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .confirm-btn:hover {
+            background-color: #218838;
+            transform: scale(1.05);
+        }
+        .confirm-btn:active {
+            background-color: #1e7e34;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Stop & Shop - عربة التسوق</h1>
+    <p>حاروف-حي البيدر -الشارع العام</p>
+    <p>⏰ ساعات العمل: 8:00 صباحًا - 10:00 مساءً</p>
+</header>
+<div class="container">
+    <h2>المنتجات في عربة التسوق</h2>
+    <div class="cart-list">
+        <table>
+            <thead>
+                <tr>
+                    <th>اسم المنتج</th>
+                    <th>السعر</th>
+                    <th>الباركود</th>
+                    <th>إزالة</th>
+                </tr>
+            </thead>
+            <tbody id="cart-table-body">
+                <!-- سيتم إضافة المنتجات هنا تلقائيًا من السكريبت -->
+            </tbody>
+        </table>
+        <div class="total">
+            المجموع الكلي: <span id="total-amount">0</span> دولار
+        </div>
+    </div>
+    <a href="order-confirm.html" id="confirm-order-btn" class="confirm-btn" onclick="placeOrder()">تأكيد الطلب</a>
+<br>
+    <a href="customer-login.html">العودة إلى صفحة المنتجات</a><br>
+    <a href="special-offers.html">العودة إلى صفحة العروضات</a>
+</div>
+<footer>
+    <p>📍 Harouf, Al baydar, Main Street</p>
+</footer>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        displayCartProducts();
+    });
+
+    function displayCartProducts() {
+        let cart = localStorage.getItem('cart');
+        cart = cart ? JSON.parse(cart) : [];
+        
+        const tableBody = document.getElementById('cart-table-body');
+        const totalAmountElem = document.getElementById('total-amount');
+        tableBody.innerHTML = ''; // إعادة تعيين جدول المنتجات
+        let totalAmount = 0;
+        
+        cart.forEach((product, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${product.name}</td>
+                <td>${product.price}</td>
+                <td>${product.barcode}</td>
+                <td><button class="remove-btn" onclick="removeFromCart(${index})">إزالة</button></td>
+            `;
+            tableBody.appendChild(row);
+            totalAmount += parseFloat(product.price);
+        });
+
+        totalAmountElem.textContent = totalAmount.toFixed(2);
+    }
+
+    function placeOrder() {
+        // توليد رقم الطلبية
+        let orderId = generateOrderId();
+
+        // تخزين رقم الطلبية في localStorage
+        localStorage.setItem('orderId', orderId);
+    }
+
+    function generateOrderId() {
+        let nextOrderId = localStorage.getItem('nextOrderId');
+        if (!nextOrderId) {
+            nextOrderId = 1;
+        } else {
+            nextOrderId = parseInt(nextOrderId) + 1;
+        }
+
+        localStorage.setItem('nextOrderId', nextOrderId);
+        return nextOrderId.toString();
+    }
+
+    function removeFromCart(index) {
+        let cart = localStorage.getItem('cart');
+        cart = cart ? JSON.parse(cart) : [];
+        
+        if (index > -1) {
+            cart.splice(index, 1);
+        }
+
+        localStorage.setItem('cart', JSON.stringify(cart));
+        displayCartProducts();
+        updateCartItemCount();
+    }
+
+    function updateCartItemCount() {
+        let cart = localStorage.getItem('cart');
+        cart = cart ? JSON.parse(cart) : [];
+        const cartItemCountElem = document.getElementById('cart-item-count');
+        if (cartItemCountElem) {
+            cartItemCountElem.textContent = cart.length;
+        }
+    }
+
+</script>
+</body>
+</html>
+

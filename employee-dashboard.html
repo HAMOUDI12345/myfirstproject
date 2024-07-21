@@ -1,0 +1,150 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم الموظفين - Stop & Shop</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333; margin: 0; padding: 20px; text-align: center; }
+        header { background-color: #0073e6; color: white; padding: 10px 0; }
+        h1 { margin: 0; }
+        .container { max-width: 800px; margin: 20px auto; padding: 20px; background: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .product-form input { width: calc(100% - 20px); padding: 8px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; }
+        .product-form button { padding: 10px 20px; border: none; background-color: #0073e6; color: white; cursor: pointer; border-radius: 4px; }
+        .product-form button:hover { background-color: #005bb5; }
+        .product-list { text-align: left; margin-top: 20px; }
+        .product-list table { width: 100%; border-collapse: collapse; }
+        .product-list th, .product-list td { padding: 10px; border: 1px solid #ccc; }
+        footer { margin-top: 20px; color: #777; }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Stop & Shop - لوحة تحكم الموظفين</h1>
+    <p>حاروف-حي البيدر -الشارع العام</p>
+    <p>⏰ ساعات العمل: 8:00 صباحًا - 10:00 مساءً</p>
+</header>
+<div class="container">
+    <h2>إضافة منتج جديد</h2>
+    <div class="product-form">
+        <input type="text" id="product-name" placeholder="اسم المنتج" required>
+        <input type="text" id="product-price" placeholder="السعر" required>
+        <input type="text" id="product-barcode" placeholder="الباركود" required>
+        <button onclick="addProduct()">إضافة منتج</button>
+    </div>
+
+    <h2>المنتجات المحفوظة</h2>
+    <div class="product-list">
+        <table>
+            <thead>
+                <tr>
+                    <th>اسم المنتج</th>
+                    <th>السعر</th>
+                    <th>الباركود</th>
+                    <th>إجراءات</th>
+                </tr>
+            </thead>
+            <tbody id="product-table-body">
+                <!-- سيتم إضافة المنتجات هنا تلقائيًا من السكريبت -->
+            </tbody>
+        </table>
+    </div>
+
+    <a href="(stp).html">العودة إلى تسجيل الدخول للموظفين</a>
+</div>
+<footer>
+    <p>📍 Harouf, Al baydar, Main Street</p>
+</footer>
+<script>
+    // عند تحميل الصفحة، عرض المنتجات المحفوظة في localStorage
+    document.addEventListener('DOMContentLoaded', function() {
+        displayProducts();
+    });
+
+    function displayProducts() {
+        let products = localStorage.getItem('products');
+        products = products ? JSON.parse(products) : [];
+        
+        const tableBody = document.getElementById('product-table-body');
+        tableBody.innerHTML = ''; // إعادة تعيين جدول المنتجات
+        
+        products.forEach((product, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${product.name}</td>
+                <td>${product.price}</td>
+                <td>${product.barcode}</td>
+                <td>
+                    <button onclick="editProduct(${index})">تعديل</button>
+                    <button onclick="deleteProduct(${index})">حذف</button>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    function addProduct() {
+        const productName = document.getElementById('product-name').value;
+        const productPrice = document.getElementById('product-price').value;
+        const productBarcode = document.getElementById('product-barcode').value;
+        
+        let products = localStorage.getItem('products');
+        products = products ? JSON.parse(products) : [];
+        
+        // إضافة المنتج الجديد إلى قائمة المنتجات
+        products.push({ name: productName, price: productPrice, barcode: productBarcode });
+        
+        // حفظ المنتجات في localStorage
+        localStorage.setItem('products', JSON.stringify(products));
+        
+        alert('تم إضافة المنتج بنجاح');
+        
+        // إعادة تعيين حقول الإدخال للإعداد لإضافة منتج آخر
+        document.getElementById('product-name').value = '';
+        document.getElementById('product-price').value = '';
+        document.getElementById('product-barcode').value = '';
+        
+        // إعادة عرض القائمة المحدثة من المنتجات
+        displayProducts();
+    }
+
+    function editProduct(index) {
+        let products = localStorage.getItem('products');
+        products = products ? JSON.parse(products) : [];
+        
+        // تعديل منتج محدد بناءً على الفهرس
+        const editedProductName = prompt('الرجاء إدخال اسم المنتج الجديد:', products[index].name);
+        const editedProductPrice = prompt('الرجاء إدخال السعر الجديد:', products[index].price);
+        const editedProductBarcode = prompt('الرجاء إدخال الباركود الجديد:', products[index].barcode);
+        
+        // تحديث بيانات المنتج
+        products[index].name = editedProductName;
+        products[index].price = editedProductPrice;
+        products[index].barcode = editedProductBarcode;
+        
+        // حفظ المنتجات المحدثة في localStorage
+        localStorage.setItem('products', JSON.stringify(products));
+        
+        // إعادة عرض القائمة المحدثة من المنتجات
+        displayProducts();
+    }
+
+    function deleteProduct(index) {
+        let products = localStorage.getItem('products');
+        products = products ? JSON.parse(products) : [];
+        
+        // حذف منتج محدد بناءً على الفهرس
+        if (confirm(`هل أنت متأكد من حذف المنتج "${products[index].name}"؟`)) {
+            products.splice(index, 1);
+            
+            // حفظ المنتجات المحدثة في localStorage
+            localStorage.setItem('products', JSON.stringify(products));
+            
+            // إعادة عرض القائمة المحدثة من المنتجات
+            displayProducts();
+        }
+    }
+</script>
+</body>
+</html>

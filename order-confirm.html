@@ -1,0 +1,127 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تأكيد الطلب - Stop & Shop</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333; margin: 0; padding: 20px; text-align: center; }
+        header { background-color: #0073e6; color: white; padding: 10px 0; }
+        h1 { margin: 0; }
+        .container { max-width: 800px; margin: 20px auto; padding: 20px; background: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .order-details { text-align: left; margin-top: 20px; }
+        footer { margin-top: 20px; color: #777; }
+        .btn { background-color: #0073e6; color: white; padding: 10px 20px; border: none; cursor: pointer; border-radius: 4px; text-decoration: none; display: inline-block; margin-top: 10px; }
+        .btn:hover { background-color: #005ea6; }
+    </style>
+</head>
+<body>
+<header>
+    <h1>تأكيد الطلب - Stop & Shop</h1>
+</header>
+<div class="container">
+    <h2>تفاصيل الطلب</h2>
+    <div class="order-details">
+        <p><strong>الاسم:</strong> <input type="text" id="customer-name"></p>
+        <p><strong>العنوان:</strong> <input type="text" id="customer-address"></p>
+        <p><strong>رقم الهاتف:</strong> <input type="text" id="customer-phone"></p>
+        <p><strong>رقم الطابق:</strong> <input type="text" id="customer-floor"></p>
+        <p><strong>البلدة:</strong> <input type="text" id="customer-town"></p>
+        <p><strong>رقم الطلبية:</strong> <span id="order-id">[رقم الطلبية]</span></p>
+    </div>
+    <div>
+        <a href="#" class="btn" id="send-to-supermarket">إرسال الطلبية إلى السوبر ماركت عبر WhatsApp</a>
+        <a href="#" class="btn" id="contact-delivery">التواصل مع خدمة التوصيل عبر الدليفيري عبر WhatsApp</a>
+    </div>
+    <br>
+    <a href="cart.html">العودة إلى صفحة الشراء</a><br>
+    
+</div>
+<footer>
+    <p>📍 Harouf, Al baydar, Main Street</p>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // استرجاع البيانات من localStorage وعرضها في الحقول
+        const customerName = localStorage.getItem('customerName') || '';
+        const customerAddress = localStorage.getItem('customerAddress') || '';
+        const customerPhone = localStorage.getItem('customerPhone') || '';
+        const customerFloor = localStorage.getItem('customerFloor') || '';
+        const customerTown = localStorage.getItem('customerTown') || '';
+        const orderId = localStorage.getItem('orderId') || generateOrderId();
+
+        document.getElementById('customer-name').value = customerName;
+        document.getElementById('customer-address').value = customerAddress;
+        document.getElementById('customer-phone').value = customerPhone;
+        document.getElementById('customer-floor').value = customerFloor;
+        document.getElementById('customer-town').value = customerTown;
+        document.getElementById('order-id').textContent = orderId;
+    });
+
+    // توليد رقم الطلبية تلقائيًا
+    function generateOrderId() {
+        let nextOrderId = localStorage.getItem('nextOrderId');
+        if (!nextOrderId) {
+            nextOrderId = 1;
+        } else {
+            nextOrderId = parseInt(nextOrderId) + 1;
+        }
+
+        localStorage.setItem('nextOrderId', nextOrderId);
+        localStorage.setItem('orderId', nextOrderId);
+        return nextOrderId.toString();
+    }
+
+    // رقم هاتف السوبر ماركت والدليفيري لإرسال الطلبية
+    const supermarketPhoneNumber = '+96178954599'; // تغيير هذا برقم هاتف السوبر ماركت الفعلي
+    const deliveryPhoneNumber = '+96181479786'; // تغيير هذا برقم هاتف الدليفيري الفعلي
+
+    // زر إرسال الطلبية إلى السوبر ماركت عبر WhatsApp
+    document.getElementById('send-to-supermarket').addEventListener('click', function(event) {
+        event.preventDefault();
+        sendMessage(supermarketPhoneNumber, true);
+    });
+
+    // زر إرسال الطلبية إلى الدليفيري عبر WhatsApp
+    document.getElementById('contact-delivery').addEventListener('click', function(event) {
+        event.preventDefault();
+        sendMessage(deliveryPhoneNumber, false);
+    });
+
+    function sendMessage(phoneNumber, includeCart) {
+        const customerName = document.getElementById('customer-name').value;
+        const customerAddress = document.getElementById('customer-address').value;
+        const customerPhone = document.getElementById('customer-phone').value;
+        const customerFloor = document.getElementById('customer-floor').value;
+        const customerTown = document.getElementById('customer-town').value;
+        const orderId = document.getElementById('order-id').textContent;
+
+        if (!customerName || !customerAddress || !customerPhone || !customerFloor || !customerTown || !orderId) {
+            alert('الرجاء ملء جميع الحقول.');
+            return;
+        }
+
+        let message = `الاسم: ${customerName}\nالعنوان: ${customerAddress}\nرقم الهاتف: ${customerPhone}\nرقم الطابق: ${customerFloor}\nالبلدة: ${customerTown}\nرقم الطلبية: ${orderId}`;
+
+        if (includeCart) {
+            const cart = localStorage.getItem('cart');
+            if (cart) {
+                const cartItems = JSON.parse(cart).map(item => `${item.name} (${item.price} دولار)`).join('\n');
+                const totalAmount = calculateTotalAmount(JSON.parse(cart));
+                message += `\n\nالمنتجات:\n${cartItems}\n\nالمجموع الكلي: ${totalAmount.toFixed(2)} دولار`;
+            }
+        }
+
+        const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+        window.open(whatsappURL, '_blank');
+    }
+
+    function calculateTotalAmount(cart) {
+        return cart.reduce((total, product) => total + parseFloat(product.price), 0);
+    }
+</script>
+
+</body>
+</html>
